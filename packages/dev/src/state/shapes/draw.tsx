@@ -233,23 +233,20 @@ export class DrawUtil extends TLShapeUtil<T, E> {
 
 const average = (a: number, b: number) => (a + b) / 2
 
-function getSvgPathFromStroke(points: number[][]): string {
-  const len = points.length
+function getSvgPathFromStroke(points: {xs: number[], ys: number[]}): string {
+  const len = xs.length
 
   if (!len) {
     return ''
   }
 
-  const first = points[0]
-  let result = `M${first[0].toFixed(3)},${first[1].toFixed(3)}Q`
+  let x0 = xs[0], y0 = ys[0], x1 = xs[1], y1 = ys[1], x2 = xs[2], y2 = ys[2]
+  let result = `M${x0.toFixed(2)},${y0.toFixed(2)}
+    Q ${x1.toFixed(2)},${y1.toFixed(2)} ${average(x1, x2).toFixed(2)},${average(y1, y2).toFixed(2)}
+    T `;
 
-  for (let i = 0, max = len - 1; i < max; i++) {
-    const a = points[i]
-    const b = points[i + 1]
-    result += `${a[0].toFixed(3)},${a[1].toFixed(3)} ${average(
-      a[0],
-      b[0]
-    ).toFixed(3)},${average(a[1], b[1]).toFixed(3)} `
+  for (let i = 0, max = len - 1; i < max; i++) { // TODO: bound check, start at > 0, etc.
+    result += `${average(xs[i], xs[i+1]).toFixed(2)},${average(ys[i], ys[i+1]).toFixed(2)} `;
   }
 
   result += 'Z'
